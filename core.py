@@ -1,27 +1,30 @@
 import time
-import requests
 
-class NetworkError(Exception):
-    pass
+class RobloxOptimizer:
+    def __init__(self, data):
+        self.data = data
+        self.cache = {}
 
-def retry_request(url, retries=3, backoff=1):
-    """Makes a GET request with retry logic."""
-    for attempt in range(retries):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an error for bad responses
-            return response.json()  # Return JSON response if successful
-        except requests.exceptions.RequestException as e:
-            if attempt < retries - 1:
-                time.sleep(backoff)
-                backoff *= 2  # Exponential backoff
-                continue  # Retry the request
-            raise NetworkError(f'Network request failed after {retries} attempts: {e}') from e
+    def expensive_operation(self, item):
+        time.sleep(1)  # Simulating expensive calculation
+        return item * 2
 
-# Example usage
+    def process_data(self):
+        results = []
+        for item in self.data:
+            if item in self.cache:
+                results.append(self.cache[item])
+            else:
+                result = self.expensive_operation(item)
+                self.cache[item] = result
+                results.append(result)
+        return results
+
+# Example usage:
 if __name__ == '__main__':
-    try:
-        data = retry_request('https://api.example.com/data')
-        print(data)
-    except NetworkError as e:
-        print(e)
+    optimizer = RobloxOptimizer([1, 2, 3, 1, 2, 3])
+    start_time = time.time()
+    optimized_results = optimizer.process_data()
+    end_time = time.time()
+    print(f'Optimized Results: {optimized_results}')
+    print(f'Time taken: {end_time - start_time} seconds')
