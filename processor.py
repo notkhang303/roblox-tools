@@ -1,22 +1,30 @@
 import time
 
-class DataProcessor:
-    def __init__(self, data):
-        self.data = data
+class RobloxProcessor:
+    def __init__(self):
+        self.cache = {}
 
-    def process_data(self):
+    def process_data(self, data):
         start_time = time.time()
-        results = [self._optimize(item) for item in self.data]
-        elapsed_time = time.time() - start_time
-        print(f"Processing completed in {elapsed_time:.2f} seconds")
-        return results
+        # Check if the result is in cache
+        if hash(data) in self.cache:
+            return self.cache[hash(data)]
+        
+        # Simulate data processing
+        result = self._expensive_operation(data)
+        processing_time = time.time() - start_time
+        print(f"Processing Time: {processing_time:.4f} seconds")
+        # Store result in cache for future use
+        self.cache[hash(data)] = result
+        return result
 
-    def _optimize(self, item):
-        # Example optimization: simple multiplication
-        return item * 2
+    def _expensive_operation(self, data):
+        # Simulate an expensive operation
+        time.sleep(1)  # simulate delay
+        return sum(data)  # replace with actual processing logic
 
-
+# Usage example
 if __name__ == '__main__':
-    sample_data = range(1000000)
-    processor = DataProcessor(sample_data)
-    processed_data = processor.process_data()
+    processor = RobloxProcessor()
+    print(processor.process_data([1, 2, 3, 4]))  # First call, not cached
+    print(processor.process_data([1, 2, 3, 4]))  # Second call, should use cache
