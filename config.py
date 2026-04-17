@@ -1,32 +1,32 @@
 import json
-import os
 
 class ConfigLoader:
-    def __init__(self, default_config=None):
-        self.default_config = default_config if default_config else {}
-        self.config = self.load_config()
+    def __init__(self, default_config):
+        # Load default configuration
+        self.config = default_config
 
-    def load_config(self):
-        config_path = os.path.join(os.getcwd(), 'config.json')
-        if os.path.isfile(config_path):
-            with open(config_path, 'r') as config_file:
-                user_config = json.load(config_file)
-                return {**self.default_config, **user_config}
-        return self.default_config
+    def load_config(self, file_path):
+        # Load configuration from a JSON file if it exists
+        try:
+            with open(file_path, 'r') as file:
+                user_config = json.load(file)
+                self.config.update(user_config)
+        except FileNotFoundError:
+            print(f'Config file not found: {file_path}')
+        except json.JSONDecodeError:
+            print(f'Error decoding JSON from: {file_path}')
 
     def get(self, key, default=None):
+        # Retrieve a configuration value, with a default fallback
         return self.config.get(key, default)
-
-    def set(self, key, value):
-        self.config[key] = value
-
-    def save(self):
-        config_path = os.path.join(os.getcwd(), 'config.json')
-        with open(config_path, 'w') as config_file:
-            json.dump(self.config, config_file, indent=4)
 
 # Example usage
 if __name__ == '__main__':
-    defaults = {'volume': 100, 'graphics': 'high'}
-    config_loader = ConfigLoader(defaults)
-    print(config_loader.get('volume'))  # Outputs the volume from the config
+    default_config = {
+        'theme': 'dark',
+        'language': 'en',
+        'volume': 75
+    }
+    config_loader = ConfigLoader(default_config)
+    config_loader.load_config('config.json')
+    print(config_loader.get('theme'))  # Outputs the theme value
