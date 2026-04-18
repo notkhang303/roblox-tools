@@ -1,20 +1,42 @@
-def validate_input(value):
+def is_valid_user_id(user_id):
     """
-    Validates the input value to ensure it meets specified criteria.
-    Only allows integers, and must be positive.
+    Validate if the user ID is in the correct format.
+    User IDs should be numeric and positive.
     """
-    if not isinstance(value, int):
-        raise ValueError('Input must be an integer.')
-    if value <= 0:
-        raise ValueError('Input must be a positive integer.')
-    return True
+    return isinstance(user_id, int) and user_id > 0
 
-if __name__ == '__main__':
-    # Example use case in a loop
-    inputs = [10, -5, 'abc', 20]
-    for val in inputs:
-        try:
-            validate_input(val)
-            print(f'Input {val} is valid.')
-        except ValueError as e:
-            print(f'Input {val} is invalid: {e}')
+
+def is_valid_game_id(game_id):
+    """
+    Validate if the game ID is in the correct format.
+    Game IDs should be numeric and positive.
+    """  
+    return isinstance(game_id, int) and game_id > 0
+
+
+def is_valid_username(username):
+    """
+    Validate if the username is in the correct format.
+    Usernames should be a string of 3 to 20 alphanumeric characters.
+    """
+    if not isinstance(username, str):
+        return False
+    return 3 <= len(username) <= 20 and username.isalnum()
+
+
+def is_valid_asset_id(asset_id):
+    """
+    Validate if the asset ID is in the correct format.
+    Asset IDs should be numeric and positive.
+    """  
+    return isinstance(asset_id, int) and asset_id > 0
+
+
+def is_valid_email(email):
+    """
+    Validate if the email address is properly formatted.
+    This uses a simple regex pattern.
+    """
+    import re
+    pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(pattern, email) is not None
