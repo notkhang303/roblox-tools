@@ -1,33 +1,22 @@
-import re
-
-class ValidationError(Exception):
-    pass
-
-def validate_username(username):
-    if not isinstance(username, str):
-        raise ValidationError('Username must be a string.')
-    if not (3 <= len(username) <= 20):
-        raise ValidationError('Username must be between 3 and 20 characters long.')
-    if not re.match('^[A-Za-z0-9_]+$', username):
-        raise ValidationError('Username can only contain letters, numbers, and underscores.')
-    return True
+def validate_user_input(user_input):
+    if not isinstance(user_input, str):
+        raise ValueError("Input must be a string.")
+    if len(user_input) == 0:
+        raise ValueError("Input cannot be empty.")
+    if len(user_input) > 100:
+        raise ValueError("Input cannot exceed 100 characters.")
+    return user_input
 
 
-def validate_password(password):
-    if not isinstance(password, str):
-        raise ValidationError('Password must be a string.')
-    if len(password) < 8:
-        raise ValidationError('Password must be at least 8 characters long.')
-    if not any(char.isdigit() for char in password):
-        raise ValidationError('Password must contain at least one number.')
-    if not any(char.isupper() for char in password):
-        raise ValidationError('Password must contain at least one uppercase letter.')
-    return True
+def main_processing_loop():
+    while True:
+        user_input = input("Enter command: ")
+        try:
+            validated_input = validate_user_input(user_input)
+            # Process the validated input
+            print(f"Processing: {validated_input}")
+        except ValueError as e:
+            print(f"Error: {e}")
 
-
-def validate_email(email):
-    if not isinstance(email, str):
-        raise ValidationError('Email must be a string.')
-    if not re.match('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-        raise ValidationError('Invalid email format.')
-    return True
+if __name__ == '__main__':
+    main_processing_loop()
