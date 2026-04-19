@@ -1,30 +1,33 @@
 import time
+from typing import List, Dict
 
-class RobloxProcessor:
+class PerformanceProcessor:
     def __init__(self):
-        self.cache = {}
+        self.data_cache: Dict[str, List[int]] = {}
 
-    def process_data(self, data):
+    def process_data(self, data: List[int]) -> List[int]:
+        if not data:
+            return []
+        key = self._generate_key(data)
+        if key in self.data_cache:
+            return self.data_cache[key]
         start_time = time.time()
-        # Check if the result is in cache
-        if hash(data) in self.cache:
-            return self.cache[hash(data)]
-        
-        # Simulate data processing
-        result = self._expensive_operation(data)
-        processing_time = time.time() - start_time
-        print(f"Processing Time: {processing_time:.4f} seconds")
-        # Store result in cache for future use
-        self.cache[hash(data)] = result
+        result = self._compute_heavy_operation(data)
+        elapsed_time = time.time() - start_time
+        print(f"Processing time: {elapsed_time:.4f} seconds")
+        self.data_cache[key] = result
         return result
 
-    def _expensive_operation(self, data):
-        # Simulate an expensive operation
-        time.sleep(1)  # simulate delay
-        return sum(data)  # replace with actual processing logic
+    def _generate_key(self, data: List[int]) -> str:
+        return ','.join(map(str, sorted(data)))
 
-# Usage example
-if __name__ == '__main__':
-    processor = RobloxProcessor()
-    print(processor.process_data([1, 2, 3, 4]))  # First call, not cached
-    print(processor.process_data([1, 2, 3, 4]))  # Second call, should use cache
+    def _compute_heavy_operation(self, data: List[int]) -> List[int]:
+        # Simulate a time-consuming task
+        return [x * 2 for x in data]
+
+# Example Usage
+data_processor = PerformanceProcessor()
+result = data_processor.process_data([1, 2, 3, 4])
+print(result)
+result = data_processor.process_data([4, 3, 2, 1])  # Cached result
+print(result)
