@@ -1,24 +1,35 @@
-import re
+import os
+import json
+import logging
+
+def load_settings(file_path):
+    """Load settings from a JSON file."""
+    if not os.path.exists(file_path):
+        logging.error(f"Settings file {file_path} not found.")
+        return None
+    with open(file_path, 'r') as file:
+        return json.load(file)
 
 
-def validate_input(user_input):
-    if not isinstance(user_input, str):
-        raise ValueError("Input must be a string.")
-    if len(user_input) == 0:
-        raise ValueError("Input cannot be empty.")
-    if not re.match(r'^[a-zA-Z0-9_]+$', user_input):
-        raise ValueError("Input can only contain alphanumeric characters and underscores.")
+def save_settings(file_path, settings):
+    """Save settings to a JSON file."""
+    with open(file_path, 'w') as file:
+        json.dump(settings, file, indent=4)
+    logging.info(f"Settings saved to {file_path}.")
 
 
-def main_loop():
-    while True:
-        try:
-            user_input = input('Enter your command: ')
-            validate_input(user_input)
-            # Process the valid input
-            print(f'Processing command: {user_input}')
-        except ValueError as e:
-            print(f'Invalid input: {e}')
+def validate_setting(setting, valid_types):
+    """Validate setting against allowed types."""
+    if not isinstance(setting, valid_types):
+        logging.error(f"Invalid setting type: {type(setting).__name__}.")
+        return False
+    return True
 
-if __name__ == '__main__':
-    main_loop()
+
+def create_directory(directory_path):
+    """Create a directory if it does not exist."""
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+        logging.info(f"Directory created: {directory_path}.")
+    else:
+        logging.info(f"Directory already exists: {directory_path}.")
