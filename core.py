@@ -1,41 +1,46 @@
-from typing import List, Dict, Any
+import random
+import logging
 
-class RobloxGame:
-    def __init__(self, name: str, player_count: int) -> None:
-        """Initialize a Roblox game with a name and player count."""
-        self.name = name
-        self.player_count = player_count
+logger = logging.getLogger(__name__)
 
-    def get_info(self) -> Dict[str, Any]:
-        """Retrieve game information as a dictionary."""
-        return {
-            'name': self.name,
-            'player_count': self.player_count
-        }
+class GameSession:
+    def __init__(self, player_name):
+        self.player_name = player_name
+        self.score = 0
+        logger.info(f"Initialized game session for {player_name}")
 
-class GameManager:
-    def __init__(self) -> None:
-        """Initialize the game manager with an empty games list."""
-        self.games: List[RobloxGame] = []
+    def update_score(self, points):
+        self.score += points
+        logger.info(f"{self.player_name} scored {points} points. Total score: {self.score}")
 
-    def add_game(self, game: RobloxGame) -> None:
-        """Add a Roblox game to the manager."""
-        self.games.append(game)
+    def get_score(self):
+        return self.score
 
-    def list_games(self) -> List[Dict[str, Any]]:
-        """List all games managed by the GameManager."""
-        return [game.get_info() for game in self.games]
+    def end_session(self):
+        logger.info(f"Ending game session for {self.player_name}. Final score: {self.score}")
 
-    def find_game(self, name: str) -> RobloxGame:
-        """Find a game by its name, returns None if not found."""
-        for game in self.games:
-            if game.name == name:
-                return game
-        return None
+class Game:
+    def __init__(self):
+        self.sessions = []
 
-# Example usage:
+    def start_session(self, player_name):
+        session = GameSession(player_name)
+        self.sessions.append(session)
+        logger.info(f"Started new session for {player_name}")
+        return session
+
+    def simulate_game(self):
+        for session in self.sessions:
+            points = random.randint(1, 10)
+            session.update_score(points)
+
+    def end_all_sessions(self):
+        for session in self.sessions:
+            session.end_session()
+
 if __name__ == '__main__':
-    manager = GameManager()
-    game1 = RobloxGame('Adopt Me!', 1000)
-    manager.add_game(game1)
-    print(manager.list_games())  # [{'name': 'Adopt Me!', 'player_count': 1000}]
+    game = Game()
+    player1 = game.start_session('Player1')
+    player2 = game.start_session('Player2')
+    game.simulate_game()
+    game.end_all_sessions()
