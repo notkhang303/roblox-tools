@@ -1,29 +1,31 @@
 import json
 import os
 
+DEFAULT_CONFIG = {
+    'username': 'guest',
+    'max_players': 20,
+    'game_mode': 'survival',
+    'difficulty': 'normal',
+}
+
 class ConfigLoader:
-    def __init__(self, default_config_path, user_config_path):
-        self.default_config_path = default_config_path
-        self.user_config_path = user_config_path
+    def __init__(self, config_path='config.json'):
+        self.config_path = config_path
         self.config = self.load_config()
 
     def load_config(self):
-        config = self.load_json(self.default_config_path)
-        user_config = self.load_json(self.user_config_path)
-        if user_config:
-            config.update(user_config)
+        if os.path.exists(self.config_path):
+            with open(self.config_path, 'r') as file:
+                return self._merge_with_defaults(json.load(file))
+        return DEFAULT_CONFIG
+
+    def _merge_with_defaults(self, user_config):
+        # Merge user config with defaults
+        config = DEFAULT_CONFIG.copy()
+        config.update(user_config)
         return config
-
-    def load_json(self, path):
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8') as file:
-                return json.load(file)
-        return {}
-
-    def get(self, key, default=None):
-        return self.config.get(key, default)
 
 # Example usage
 if __name__ == '__main__':
-    loader = ConfigLoader('default_config.json', 'user_config.json')
-    print(loader.get('some_key', 'default_value'))
+    loader = ConfigLoader()
+    print(loader.config)
