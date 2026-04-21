@@ -1,31 +1,47 @@
-import json
-import re
-from validators import validate_user_input
+from typing import List, Dict, Any
 
-class RobloxTools:
-    def __init__(self):
-        self.user_data = {}  
+class RobloxGame:
+    """
+    Represents a Roblox game with various attributes.
+    """
 
-    def process_user_data(self, user_input):
-        # Validate user input
-        if not validate_user_input(user_input):
-            raise ValueError('Invalid input. Please check your data.')
+    def __init__(self, title: str, genre: str, player_count: int) -> None:
+        """
+        Initializes a new instance of RobloxGame.
+        
+        :param title: The title of the game.
+        :param genre: The genre of the game.
+        :param player_count: The current number of players in the game.
+        """
+        self.title = title
+        self.genre = genre
+        self.player_count = player_count
 
-        # Process the validated user input
-        self.user_data['username'] = user_input.get('username')
-        self.user_data['age'] = user_input.get('age')
-        self.user_data['email'] = user_input.get('email')
-        print('User data processed successfully.')
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the game attributes to a dictionary.
+        
+        :return: A dictionary representation of the game.
+        """
+        return {
+            'title': self.title,
+            'genre': self.genre,
+            'player_count': self.player_count
+        }
 
-    def to_json(self):
-        return json.dumps(self.user_data)
+    def update_player_count(self, count: int) -> None:
+        """
+        Updates the player count of the game.
+        
+        :param count: The new player count.
+        """
+        self.player_count = count
 
-# Example usage
-if __name__ == '__main__':
-    tools = RobloxTools()
-    sample_input = {'username': 'RobloxPlayer1', 'age': 13, 'email': 'player@example.com'}
-    try:
-        tools.process_user_data(sample_input)
-        print(tools.to_json())
-    except ValueError as e:
-        print(e)
+def get_top_games(games: List[RobloxGame]) -> List[RobloxGame]:
+    """
+    Returns a list of Roblox games sorted by player count.
+    
+    :param games: A list of RobloxGame instances.
+    :return: A list of Roblox games sorted by player count in descending order.
+    """
+    return sorted(games, key=lambda game: game.player_count, reverse=True)
