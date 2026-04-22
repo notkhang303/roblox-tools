@@ -1,47 +1,38 @@
-from typing import List, Dict, Any
+import time
+import functools
 
-class RobloxGame:
-    """
-    Represents a Roblox game with various attributes.
-    """
+# Decorator to measure performance of functions
 
-    def __init__(self, title: str, genre: str, player_count: int) -> None:
-        """
-        Initializes a new instance of RobloxGame.
-        
-        :param title: The title of the game.
-        :param genre: The genre of the game.
-        :param player_count: The current number of players in the game.
-        """
-        self.title = title
-        self.genre = genre
-        self.player_count = player_count
+def performance_monitor(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()  # Record start time
+        result = func(*args, **kwargs)
+        end_time = time.time()  # Record end time
+        execution_time = end_time - start_time
+        print(f'[{func.__name__}] executed in {execution_time:.4f}s')
+        return result
+    return wrapper
 
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts the game attributes to a dictionary.
-        
-        :return: A dictionary representation of the game.
-        """
-        return {
-            'title': self.title,
-            'genre': self.genre,
-            'player_count': self.player_count
-        }
+# Sample usage of the performance monitor
 
-    def update_player_count(self, count: int) -> None:
-        """
-        Updates the player count of the game.
-        
-        :param count: The new player count.
-        """
-        self.player_count = count
+class GameData:
+    def __init__(self):
+        self.players = []
 
-def get_top_games(games: List[RobloxGame]) -> List[RobloxGame]:
-    """
-    Returns a list of Roblox games sorted by player count.
-    
-    :param games: A list of RobloxGame instances.
-    :return: A list of Roblox games sorted by player count in descending order.
-    """
-    return sorted(games, key=lambda game: game.player_count, reverse=True)
+    @performance_monitor
+    def add_player(self, player_name):
+        time.sleep(0.1)  # Simulate a delay
+        self.players.append(player_name)
+
+    @performance_monitor
+    def get_player_count(self):
+        time.sleep(0.1)  # Simulate a delay
+        return len(self.players)
+
+# Example of class usage
+if __name__ == '__main__':
+    game_data = GameData()
+    game_data.add_player('Player1')
+    count = game_data.get_player_count()
+    print(f'Current player count: {count}')
