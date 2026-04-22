@@ -1,33 +1,42 @@
-import time
-from typing import List, Dict
+import json
+import requests
 
-class PerformanceProcessor:
-    def __init__(self):
-        self.data_cache: Dict[str, List[int]] = {}
+class RobloxDataProcessor:
+    def __init__(self, api_url):
+        self.api_url = api_url
 
-    def process_data(self, data: List[int]) -> List[int]:
-        if not data:
-            return []
-        key = self._generate_key(data)
-        if key in self.data_cache:
-            return self.data_cache[key]
-        start_time = time.time()
-        result = self._compute_heavy_operation(data)
-        elapsed_time = time.time() - start_time
-        print(f"Processing time: {elapsed_time:.4f} seconds")
-        self.data_cache[key] = result
-        return result
+    def fetch_data(self, endpoint):
+        """Fetch data from the specified Roblox API endpoint."""
+        response = requests.get(f'{self.api_url}/{endpoint}')
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise Exception(f'Error fetching data: {response.status_code}')
 
-    def _generate_key(self, data: List[int]) -> str:
-        return ','.join(map(str, sorted(data)))
+    def process_user_data(self, user_id):
+        """Process user data from Roblox API."""
+        user_endpoint = f'users/{user_id}'
+        user_data = self.fetch_data(user_endpoint)
+        return {
+            'id': user_data['id'],
+            'username': user_data['username'],
+            'join_date': user_data['created'],
+            'status': user_data['lastStatus']
+        }
 
-    def _compute_heavy_operation(self, data: List[int]) -> List[int]:
-        # Simulate a time-consuming task
-        return [x * 2 for x in data]
+    def process_game_data(self, game_id):
+        """Process game data from Roblox API."""
+        game_endpoint = f'games/{game_id}'
+        game_data = self.fetch_data(game_endpoint)
+        return {
+            'id': game_data['id'],
+            'name': game_data['name'],
+            'genre': game_data['genre'],
+            'visits': game_data['visits']
+        }
 
-# Example Usage
-data_processor = PerformanceProcessor()
-result = data_processor.process_data([1, 2, 3, 4])
-print(result)
-result = data_processor.process_data([4, 3, 2, 1])  # Cached result
-print(result)
+if __name__ == '__main__':
+    api_url = 'https://api.roblox.com'
+    processor = RobloxDataProcessor(api_url)
+    print(processor.process_user_data(1))  # Example user
+    print(processor.process_game_data(1))  # Example game
