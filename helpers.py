@@ -1,33 +1,37 @@
 import random
-import string
-
-def generate_random_username(length=8):
-    """Generate a random username of given length."""
-    if length < 3:
-        raise ValueError('Length must be at least 3 characters')
-    letters = string.ascii_letters + string.digits
-    username = ''.join(random.choice(letters) for _ in range(length))
-    return username
 
 
-def validate_username(username):
-    """Check if a username is valid based on criteria."""
-    if not username:
-        return False
-    if len(username) < 3 or len(username) > 20:
-        return False
-    if not username.isalnum():
-        return False
-    return True
+def generate_random_id(length=12):
+    """Generate a random string of fixed length"
+    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    return ''.join(random.choice(characters) for _ in range(length))
 
 
-def format_database_connection_string(host, port, db_name, user, password):
-    """Construct a database connection string."""
-    return f'mysql+pymysql://{user}:{password}@{host}:{port}/{db_name}'
+def format_time(seconds):
+    """Convert seconds to a human-readable format"
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return f'{hours}h {minutes}m {seconds}s'
 
 
-def is_valid_email(email):
-    """Validate email format using regex."""
-    import re
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(pattern, email) is not None
+def clamp(value, min_value, max_value):
+    """Restrict a value to a given range"
+    return max(min(value, max_value), min_value)
+
+
+def calculate_distance(point1, point2):
+    """Calculate Euclidean distance between two points"
+    return ((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2) ** 0.5
+
+
+def read_json_file(filepath):
+    """Read a JSON file and return its content"""
+    with open(filepath, 'r') as file:
+        return json.load(file)
+
+
+def write_json_file(filepath, data):
+    """Write data to a JSON file"""
+    with open(filepath, 'w') as file:
+        json.dump(data, file, indent=4)
