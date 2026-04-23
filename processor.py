@@ -1,38 +1,47 @@
-from typing import List, Any
+from typing import Dict, Any
 
+class DataProcessor:
+    def __init__(self, data: Dict[str, Any]) -> None:
+        """Initialize the processor with data.
 
-def process_data(data: List[Any]) -> List[Any]:
-    """
-    Processes the input data list by applying some transformations.
+        Args:
+            data (Dict[str, Any]): The data to be processed.
+        """
+        self.data = data
 
-    Args:
-        data (List[Any]): A list of input data to be processed.
+    def filter_data(self, criteria: Dict[str, Any]) -> Dict[str, Any]:
+        """Filter the data based on given criteria.
 
-    Returns:
-        List[Any]: A list of processed data after transformations.
-    """
-    processed = []
-    for item in data:
-        transformed_item = transform_item(item)
-        processed.append(transformed_item)
-    return processed
+        Args:
+            criteria (Dict[str, Any]): Filtering criteria.
 
+        Returns:
+            Dict[str, Any]: Filtered data.
+        """
+        return {key: value for key, value in self.data.items() if all(item in value.items() for item in criteria.items())}
 
-def transform_item(item: Any) -> Any:
-    """
-    A helper function to transform a single item.
+    def sort_data(self, key: str, reverse: bool = False) -> Dict[str, Any]:
+        """Sort the data based on a given key.
 
-    Args:
-        item (Any): The input item to be transformed.
+        Args:
+            key (str): The key to sort by.
+            reverse (bool): Sort in descending order if True.
 
-    Returns:
-        Any: The transformed item.
-    """
-    # For example, we could just return the item directly (or modify it)
-    return item
+        Returns:
+            Dict[str, Any]: Sorted data.
+        """
+        return dict(sorted(self.data.items(), key=lambda item: item[1].get(key, ''), reverse=reverse))
 
+    def process(self, criteria: Dict[str, Any], sort_key: str, reverse: bool = False) -> Dict[str, Any]:
+        """Process the data by filtering and sorting.
 
-if __name__ == '__main__':
-    sample_data = [1, 2, 3]
-    result = process_data(sample_data)
-    print(result)  # Expected output: [1, 2, 3]
+        Args:
+            criteria (Dict[str, Any]): Criteria for filtering data.
+            sort_key (str): The key to sort the results.
+            reverse (bool): Sort in descending order if True.
+
+        Returns:
+            Dict[str, Any]: Processed data after filtering and sorting.
+        """
+        filtered_data = self.filter_data(criteria)
+        return self.sort_data(sort_key, reverse)
