@@ -1,42 +1,38 @@
-import json
-import requests
+from typing import List, Any
 
-class RobloxDataProcessor:
-    def __init__(self, api_url):
-        self.api_url = api_url
 
-    def fetch_data(self, endpoint):
-        """Fetch data from the specified Roblox API endpoint."""
-        response = requests.get(f'{self.api_url}/{endpoint}')
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise Exception(f'Error fetching data: {response.status_code}')
+def process_data(data: List[Any]) -> List[Any]:
+    """
+    Processes the input data list by applying some transformations.
 
-    def process_user_data(self, user_id):
-        """Process user data from Roblox API."""
-        user_endpoint = f'users/{user_id}'
-        user_data = self.fetch_data(user_endpoint)
-        return {
-            'id': user_data['id'],
-            'username': user_data['username'],
-            'join_date': user_data['created'],
-            'status': user_data['lastStatus']
-        }
+    Args:
+        data (List[Any]): A list of input data to be processed.
 
-    def process_game_data(self, game_id):
-        """Process game data from Roblox API."""
-        game_endpoint = f'games/{game_id}'
-        game_data = self.fetch_data(game_endpoint)
-        return {
-            'id': game_data['id'],
-            'name': game_data['name'],
-            'genre': game_data['genre'],
-            'visits': game_data['visits']
-        }
+    Returns:
+        List[Any]: A list of processed data after transformations.
+    """
+    processed = []
+    for item in data:
+        transformed_item = transform_item(item)
+        processed.append(transformed_item)
+    return processed
+
+
+def transform_item(item: Any) -> Any:
+    """
+    A helper function to transform a single item.
+
+    Args:
+        item (Any): The input item to be transformed.
+
+    Returns:
+        Any: The transformed item.
+    """
+    # For example, we could just return the item directly (or modify it)
+    return item
+
 
 if __name__ == '__main__':
-    api_url = 'https://api.roblox.com'
-    processor = RobloxDataProcessor(api_url)
-    print(processor.process_user_data(1))  # Example user
-    print(processor.process_game_data(1))  # Example game
+    sample_data = [1, 2, 3]
+    result = process_data(sample_data)
+    print(result)  # Expected output: [1, 2, 3]
