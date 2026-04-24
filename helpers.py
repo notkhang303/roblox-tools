@@ -1,28 +1,28 @@
-import random
-import string
-from typing import List, Any
-
-def generate_unique_id(length: int = 8) -> str:
-    """Generate a unique identifier string."""
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+import json
+from typing import Any, Dict, List, Union
 
 
-def find_item_in_list(item: Any, items: List[Any]) -> bool:
-    """Check if an item exists in a list."""
-    return item in items
+def parse_roblox_data(data: str) -> Union[Dict[str, Any], List[Any]]:
+    """Parse JSON string from Roblox API into Python dict or list."""
+    try:
+        return json.loads(data)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse JSON: {e}")
 
 
-def sort_dict_by_key(input_dict: dict) -> dict:
-    """Sort a dictionary by its keys."""
-    return dict(sorted(input_dict.items()))
+def format_roblox_data(data: Union[Dict[str, Any], List[Any]]) -> str:
+    """Convert Python dict or list back to JSON string for Roblox API."""
+    return json.dumps(data, ensure_ascii=False, indent=4)
 
 
-def convert_to_camel_case(snake_str: str) -> str:
-    """Convert a snake_case string to camelCase."""
-    components = snake_str.split('_')
-    return components[0] + ''.join(x.title() for x in components[1:])
+def get_roblox_asset_id(asset_name: str, assets: List[Dict[str, Any]]) -> Union[int, None]:
+    """Retrieve asset ID from a list of assets by name."""
+    for asset in assets:
+        if asset.get('name') == asset_name:
+            return asset.get('id')
+    return None
 
 
-def flatten_list(nested_list: List[List[Any]]) -> List[Any]:
-    """Flatten a nested list into a single list."""
-    return [item for sublist in nested_list for item in sublist]
+def filter_assets_by_type(assets: List[Dict[str, Any]], asset_type: str) -> List[Dict[str, Any]]:
+    """Filter assets by their type (e.g., 'Image', 'Model')."""
+    return [asset for asset in assets if asset.get('type') == asset_type]
