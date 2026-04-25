@@ -1,28 +1,42 @@
-import json
-from typing import Any, Dict, List, Union
+def calculate_player_score(player_data):
+    """
+    Calculate the score of a player based on their actions
+    in the game.
+    """
+    score = 0
+    for action in player_data['actions']:
+        score += action['points']
+    return score
 
 
-def parse_roblox_data(data: str) -> Union[Dict[str, Any], List[Any]]:
-    """Parse JSON string from Roblox API into Python dict or list."""
-    try:
-        return json.loads(data)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to parse JSON: {e}")
+def generate_random_id(length=8):
+    """
+    Generate a random alphanumeric ID of given length.
+    """
+    import random
+    import string
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
 
 
-def format_roblox_data(data: Union[Dict[str, Any], List[Any]]) -> str:
-    """Convert Python dict or list back to JSON string for Roblox API."""
-    return json.dumps(data, ensure_ascii=False, indent=4)
+def format_timestamp(timestamp):
+    """
+    Convert a timestamp into a human-readable date string.
+    """
+    from datetime import datetime
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 
-def get_roblox_asset_id(asset_name: str, assets: List[Dict[str, Any]]) -> Union[int, None]:
-    """Retrieve asset ID from a list of assets by name."""
-    for asset in assets:
-        if asset.get('name') == asset_name:
-            return asset.get('id')
-    return None
+def validate_player_data(player_data):
+    """
+    Validate the structure of player data dictionary.
+    """
+    required_keys = ['id', 'name', 'level', 'actions']
+    return all(key in player_data for key in required_keys)
 
 
-def filter_assets_by_type(assets: List[Dict[str, Any]], asset_type: str) -> List[Dict[str, Any]]:
-    """Filter assets by their type (e.g., 'Image', 'Model')."""
-    return [asset for asset in assets if asset.get('type') == asset_type]
+def filter_active_players(player_list):
+    """
+    Filter the active players from a list based on their status.
+    """
+    return [player for player in player_list if player['status'] == 'active']
