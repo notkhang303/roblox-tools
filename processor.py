@@ -1,47 +1,34 @@
-from typing import Dict, Any
+import json
+import time
 
-class DataProcessor:
-    def __init__(self, data: Dict[str, Any]) -> None:
-        """Initialize the processor with data.
+class RobloxProcessor:
+    def __init__(self, game_id):
+        self.game_id = game_id
+        self.player_data = []
 
-        Args:
-            data (Dict[str, Any]): The data to be processed.
-        """
-        self.data = data
+    def log_player_event(self, player_id, event_type):
+        event = {
+            'player_id': player_id,
+            'event_type': event_type,
+            'timestamp': time.time()
+        }
+        self.player_data.append(event)
 
-    def filter_data(self, criteria: Dict[str, Any]) -> Dict[str, Any]:
-        """Filter the data based on given criteria.
+    def get_events_json(self):
+        return json.dumps(self.player_data, indent=4)
 
-        Args:
-            criteria (Dict[str, Any]): Filtering criteria.
+    def clear_events(self):
+        self.player_data.clear()
 
-        Returns:
-            Dict[str, Any]: Filtered data.
-        """
-        return {key: value for key, value in self.data.items() if all(item in value.items() for item in criteria.items())}
+    def print_summary(self):
+        print(f'Game ID: {self.game_id}')
+        print(f'Total Events: {len(self.player_data)}')
+        for event in self.player_data:
+            print(f"Player {event['player_id']} triggered {event['event_type']} at {event['timestamp']}.")
 
-    def sort_data(self, key: str, reverse: bool = False) -> Dict[str, Any]:
-        """Sort the data based on a given key.
-
-        Args:
-            key (str): The key to sort by.
-            reverse (bool): Sort in descending order if True.
-
-        Returns:
-            Dict[str, Any]: Sorted data.
-        """
-        return dict(sorted(self.data.items(), key=lambda item: item[1].get(key, ''), reverse=reverse))
-
-    def process(self, criteria: Dict[str, Any], sort_key: str, reverse: bool = False) -> Dict[str, Any]:
-        """Process the data by filtering and sorting.
-
-        Args:
-            criteria (Dict[str, Any]): Criteria for filtering data.
-            sort_key (str): The key to sort the results.
-            reverse (bool): Sort in descending order if True.
-
-        Returns:
-            Dict[str, Any]: Processed data after filtering and sorting.
-        """
-        filtered_data = self.filter_data(criteria)
-        return self.sort_data(sort_key, reverse)
+# Example usage
+if __name__ == '__main__':
+    processor = RobloxProcessor(game_id=123456)
+    processor.log_player_event(player_id='player1', event_type='joined')
+    processor.log_player_event(player_id='player2', event_type='left')
+    processor.print_summary()
